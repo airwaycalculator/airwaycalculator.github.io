@@ -232,12 +232,147 @@
 						}
 						tempVal = tempVal/1000;
 						document.getElementById("result"+airway).innerHTML = tempVal.toFixed(3);
-						
-						
+	
 						break;
+						
+						
 					case 2:
+						tempVal = 0;
+						age = age/10;
+						height = height/10;
+						
+						if (male){
+							var AGEYR_P95=   8.4;
+							var AGEYR_P75= 7.3;
+							var AGEYR_P25= 5.8 ;
+							var AGEYR_P5=  4.0;
+							
+							var HTCM_P95= 18.59  ;
+							var HTCM_P75=17.88;
+							var HTCM_P25=16.77;
+							var HTCM_P5=  16.08;
+							
+
+						}else{
+							var AGEYR_P95=   8.4;
+							var AGEYR_P75= 7.4;
+							var AGEYR_P25= 5.8 ;
+							var AGEYR_P5=  4.0;
+							
+							var HTCM_P95= 17.2 ;
+							var HTCM_P75=16.5;
+							var HTCM_P25=15.49;
+							var HTCM_P5=  14.81;
+
+						}
+						
+						var AGEYR_TAU = (AGEYR_P95 - AGEYR_P5)**2.0;
+
+						var AGEYR1 = (Math.max(age - AGEYR_P5,0))**3.0/AGEYR_TAU -((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P5)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
+						((Math.max(age - AGEYR_P95,0))**3.0)*((AGEYR_P75 - AGEYR_P5)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU;
+
+						var AGEYR2 = (Math.max(age - AGEYR_P25,0))**3.0/AGEYR_TAU -((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
+						((Math.max(age - AGEYR_P95,0))**3.0)*((AGEYR_P75 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU;
+
+						var HTCM_TAU = (HTCM_P95 - HTCM_P5)**2.0;
+						var HTCM1 = (Math.max(height - HTCM_P5,0))**3.0/HTCM_TAU -((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P5)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
+						((Math.max(height - HTCM_P95,0))**3.0)*((HTCM_P75 - HTCM_P5)/(HTCM_P95 - HTCM_P75))/HTCM_TAU;
+
+						var HTCM2 = (Math.max(height - HTCM_P25,0))**3.0/HTCM_TAU -((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P25)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
+						((Math.max(height - HTCM_P95,0))**3.0)*((HTCM_P75 - HTCM_P25)/(HTCM_P95 - HTCM_P75))/HTCM_TAU;
+						
+						
+						for (i = 0; i<1000; i++){
+							tempResults.push(RCS[i][0] + age * RCS[i][1] + AGEYR1 * RCS[i][2] + AGEYR2 * RCS[i][3] + height * RCS[i][4] + HTCM1 * RCS[i][5] + HTCM2 * RCS[i][6] );
+						}
+						for (i = 0; i<1000; i++){
+							tempVal += tempResults[i];
+						}
+						tempVal = tempVal/1000;
+						document.getElementById("result"+airway).innerHTML = tempVal.toFixed(3);
+
+
+					
+					
 						break;
 					case 3: 
+						tempVal = 0;
+						age = age/10;
+						height = height/10;
+						
+						if (male){
+							var AGEYR_P95=   8.4;
+							var AGEYR_P75= 7.3;
+							var AGEYR_P25= 5.8 ;
+							var AGEYR_P5=  4.0;
+							
+							var HTCM_P95= 18.59  ;
+							var HTCM_P75=17.88;
+							var HTCM_P25=16.77;
+							var HTCM_P5=  16.08;
+								
+							var ers_tot_P95=  8.03466;
+							var ers_tot_P75= 6.69945;
+							var ers_tot_P25=5.01591 ;
+							var ers_tot_P5=  3.81720 ;
+						}else{
+							var AGEYR_P95=   8.4;
+							var AGEYR_P75= 7.4;
+							var AGEYR_P25= 5.8 ;
+							var AGEYR_P5=  4.0;
+							
+							var HTCM_P95= 17.2 ;
+							var HTCM_P75=16.5;
+							var HTCM_P25=15.49;
+							var HTCM_P5=  14.81;
+														
+							var ers_tot_P95=  5.90026;
+							var ers_tot_P75= 4.90952;
+							var ers_tot_P25=3.55743 ;
+							var ers_tot_P5=  2.70214 ;
+						}
+						
+						var AGEYR_TAU = (AGEYR_P95 - AGEYR_P5)**2.0;
+
+						var AGEYR1 = (Math.max(age - AGEYR_P5,0))**3.0/AGEYR_TAU -((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P5)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
+						((Math.max(age - AGEYR_P95,0))**3.0)*((AGEYR_P75 - AGEYR_P5)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU;
+
+						var AGEYR2 = (Math.max(age - AGEYR_P25,0))**3.0/AGEYR_TAU -((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
+						((Math.max(age - AGEYR_P95,0))**3.0)*((AGEYR_P75 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU;
+
+						var HTCM_TAU = (HTCM_P95 - HTCM_P5)**2.0;
+						var HTCM1 = (Math.max(height - HTCM_P5,0))**3.0/HTCM_TAU -((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P5)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
+						((Math.max(height - HTCM_P95,0))**3.0)*((HTCM_P75 - HTCM_P5)/(HTCM_P95 - HTCM_P75))/HTCM_TAU;
+
+						var HTCM2 = (Math.max(height - HTCM_P25,0))**3.0/HTCM_TAU -((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P25)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
+						((Math.max(height - HTCM_P95,0))**3.0)*((HTCM_P75 - HTCM_P25)/(HTCM_P95 - HTCM_P75))/HTCM_TAU;
+						var ers_tot_TAU = (ers_tot_P95 - ers_tot_P5)**2.0;
+					
+						var ers_tot1 = (Math.max(vol- ers_tot_P5,0))**3.0/ers_tot_TAU -
+						((Math.max(vol- ers_tot_P75,0))**3.0)*((ers_tot_P95 - ers_tot_P5)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU +
+						((Math.max(vol- ers_tot_P95,0))**3.0)*((ers_tot_P75 - ers_tot_P5)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU;
+
+						var ers_tot2 = (Math.max(vol- ers_tot_P25,0))**3.0/ers_tot_TAU -
+						((Math.max(vol- ers_tot_P75,0))**3.0)*((ers_tot_P95 - ers_tot_P25)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU +
+						((Math.max(vol- ers_tot_P95,0))**3.0)*((ers_tot_P75 - ers_tot_P25)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU;
+
+						
+						
+						
+						for (i = 0; i<1000; i++){
+							tempResults.push(RCS[i][0] + age * RCS[i][1] + AGEYR1 * RCS[i][2] + AGEYR2 * RCS[i][3] + height * RCS[i][4] + HTCM1 * RCS[i][5] + HTCM2 * RCS[i][6]  
+							+ vol * RCS[i][7] + ers_tot1 * RCS[i][8] + ers_tot2 * RCS[i][9]);
+
+						}
+						for (i = 0; i<1000; i++){
+
+							tempVal += tempResults[i];
+										
+						}
+						tempVal = tempVal/1000;
+						document.getElementById("result"+airway).innerHTML = tempVal.toFixed(3);
+
+					
 						break;
 					default:
 						results = "Critical error! Please contact current project lead of website." 
@@ -251,11 +386,9 @@
 			var path = "/m";
 			var fname = path + model.toString();
 			if(model == 2 || model == 3){
-				if (male = true){fname += "/male" ;}
-				else {fname += "/female";}
+				if (male == true){fname += "/male/" ;}
+				else {fname += "/female/";}
 			}
-		
-			
 
 			fname = fname + "/" + airway.toString() + ".csv";
 				
@@ -263,27 +396,35 @@
 			file.open("GET", fname, false);
 			file.send();
 			raw_RCS= file.responseText;
+
 			parseCSV();
 
 		}
 		function parseCSV(){
 			var tempArray = CSVToArray();
 			RCS = [];
-			if (model == 1){
-				var i;
-				var j;
-				var tempRow;
-				for (i = 1; i<1001; i++){
-					tempRow = [];
+			var i;
+			var j;
+			var tempRow;
+			
+			for (i = 1; i<1001; i++){
+				tempRow = [];
+				if (model == 1){
 					for (j = 5; j<9; j++){
 						tempRow.push(parseFloat(tempArray[i][j]));
 					}
-					RCS.push(tempRow);
+				}else if (model ==2){
+					for (j = 5; j<12; j++){
+						tempRow.push(parseFloat(tempArray[i][j]));
+					}
+				}else {
+					for (j = 5; j<15; j++){
+						tempRow.push(parseFloat(tempArray[i][j]));
+					}
+				
 				}
-			
-			}else{
-		
-			}			
+				RCS.push(tempRow);
+			}		
 		}
 		
 		//The following function was copied from StackOverflow: 
