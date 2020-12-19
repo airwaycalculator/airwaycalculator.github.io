@@ -21,14 +21,14 @@
 			.column1 {
 			  float: left;
 			  width: 30%;
-			  padding: 10px;
-			  height:240px;
+			  padding: 15px;
+			  height:255px;
 			}
 			.column2 {
 			  float: left;
 			  width: 70%;
-			  padding: 10px;
-			  height:240px;
+			  padding: 15px;
+			  height:255px;
 			}
 			.row:after {
 			  content: "";
@@ -53,7 +53,7 @@
 	<body>
 		<div class="header">
 			<h2> Airway Dimension Calculator </h2>
-			<p style="font-size: 17.5px"> This tool is used to calculate predicted airway diameters based on the reference equations outlined in Vameghestahbanati et al. (2021). <br>
+			<p style="font-size: 17.5px"> This tool is used to calculate predicted airway diameters based on the reference equations described in Vameghestahbanati et al. (2021). <br>
 			Please completely fill either Part A <i>and/or</i> Part B:
 			</p>
 			
@@ -62,19 +62,20 @@
 		<div class="row">
 			<div class="column1" style="background-color:#dfe3ee;">
 				<form id="myForm">
-					<table><tr></tr> <tr></tr></table>
+
+					<table><tr></td><tr></td><tr></td></table>
 					<b>Part A</b>
-					<p> Total CT lung volume (litres): &nbsp <input type="text" id = "in_vol" size ="10" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </p>
+					<p> Total CT lung volume (litres): &nbsp <input type="text" id = "in_vol" size ="7" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </p>
 					<hr>
 					<p><b>Part B</b></p>
 					<table>
 						<tr>
 							<td> Age (years): &nbsp </td>
-							<td><input type = "text" id = "in_age" size ="10" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </td>
+							<td><input type = "text" id = "in_age" size ="7" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </td>
 						</tr>
 						<tr>
 							<td> Height: </td>
-							<td> <input type = "text" id ="in_height" size ="10" autocomplete="off"  pattern="[0-9]*[.,]?[0-9]+"> </td>
+							<td> <input type = "text" id ="in_height" size ="7" autocomplete="off"  pattern="[0-9]*[.,]?[0-9]+"> </td>
 							<td> &nbsp &nbsp Units: 
 								<select id="in_units">
 									<option>cm</option>
@@ -92,30 +93,43 @@
 				</form>
 			</div>
 			<div class="column2" style="background-color:#f1f1f1;">
-				<b> Results </b>
-				<p id="results_display"> </p>
+				<table><tr></td><tr></td><tr></td></table>
+				<b> Predicted airway diameters (mm) </b> <hr>
+				<table id = "results_table" style="display:none">
+					<tr>
+						<td> Trachea &nbsp  </td>
+						<td id = "result1"> </td>
+					</tr>
+					<tr>
+						<td> RMB </td>
+						<td id = "result2"> </td>
+					</tr>
+					<tr>
+						<td> LMB</td>
+						<td id = "result3"> </td>
+					</tr>
+				</table>
+				<p id ="results_display"></p>
 
 			</div>
 		</div>
 	
 
 		<div class="footer">
-		  <p>
-			<button id = "submitted">Submit</button> &nbsp &nbsp &nbsp
-			<button id = "cleared">Clear</button>
-		  
-		  </p>
+			<p>
+				<button style = "font-size:17.5px" id = "submitted">Submit</button> &nbsp &nbsp &nbsp
+				<button style = "font-size:17.5px" id = "cleared">Clear</button>
+			</p>
 		</div>
 			
 	</body>
 
 	<script type="text/javascript">
 		var results;
-		//var M1_RCS;
-		//var M2_RCS_male;
-		//var M2_RCS_female;
-		//var M3_RCS_male;
-		//var M3_RCS_female;
+		
+		var RCS = [];
+		var raw_RCS;
+		var airway;
 		
 		var vol;
 		var age;
@@ -123,7 +137,7 @@
 		var male;
 		var model;
 		
-		document.getElementById("submitted").onclick = calculate;
+		document.getElementById("submitted").onclick = process;
 		document.getElementById("cleared").onclick = clear;
 		
 		//Proccess the user inputs, proceed to calculations
@@ -147,10 +161,12 @@
 			if (height == ""){height= null;}
 			
 			
-			if ((vol != null && isNaN(vol)) || (vol != null && isNaN(vol)) || (vol != null && isNaN(vol))) {
+			if ((vol != null && isNaN(vol)) || (age != null && isNaN(age)) || (height != null && isNaN(height))) {
 				results = "<p style='color:red'><b>Mistake with inputs!</b></p>" ;
+				document.getElementById("results_display").innerHTML = results;
+				document.getElementById("results_table").style.display = "none";
 			}else{
-			
+				document.getElementById("results_display").innerHTML = "";
 				if (vol != null && age != null &&  height != null && male != null){
 					model = 3;
 				}else if(vol != null){
@@ -160,11 +176,13 @@
 				}else{
 					model = 0;
 				}
-				
-				results = "vol: " + vol + " age: " + age + " height: " + height + " male: " + male;
-				results += "<br> model: " + model;
+				//results = "vol: " + vol + " age: " + age + " height: " + height + " male: " + male;
+				//results += "<br> model: " + model;
+				if (model != 0){
+					calculate();
+				}
 			}
-			document.getElementById("results_display").innerHTML = results;
+
 		}
 		
 		function clear()
@@ -175,26 +193,177 @@
 			document.getElementById("in_male").checked = false;
 			document.getElementById("in_female").checked = false;
 			document.getElementById("results_display").innerHTML = "";
+			document.getElementById("results_table").style.display = "none";
 		
 		}
 		
 		function calculate(){
-			load_RCS();
-			document.getElementById("results_display").innerHTML = results;
+			var i;
+			var j;
+			var tempResults;
+			var tempVal;
+			
+			
+			for (airway = 1; airway < 4; airway++){
+				load_RCS();
+				tempResults =[];
+				switch(model){
+					case 1:
+						tempVal = 0;
+						var ers_tot_P95= 7.34046;
+						var ers_tot_P75= 5.78896;
+						var ers_tot_P25= 3.89463 ;
+						var ers_tot_P5=  2.96756 ;
+						var ers_tot_TAU = (ers_tot_P95 - ers_tot_P5)**2.0;
+						
+						var ers_tot1 = (Math.max(vol- ers_tot_P5,0))**3.0/ers_tot_TAU -
+						((Math.max(vol- ers_tot_P75,0))**3.0)*((ers_tot_P95 - ers_tot_P5)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU +
+						((Math.max(vol- ers_tot_P95,0))**3.0)*((ers_tot_P75 - ers_tot_P5)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU;
+
+						var ers_tot2 = (Math.max(vol- ers_tot_P25,0))**3.0/ers_tot_TAU -
+						((Math.max(vol- ers_tot_P75,0))**3.0)*((ers_tot_P95 - ers_tot_P25)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU +
+						((Math.max(vol- ers_tot_P95,0))**3.0)*((ers_tot_P75 - ers_tot_P25)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU;
+
+						for (i = 0; i<1000; i++){
+							tempResults.push(RCS[i][0] + vol * RCS[i][1] + ers_tot1 * RCS[i][2] + ers_tot2 * RCS[i][3]);
+						}
+						for (i = 0; i<1000; i++){
+							tempVal += tempResults[i];
+						}
+						tempVal = tempVal/1000;
+						document.getElementById("result"+airway).innerHTML = tempVal.toFixed(3);
+						
+						
+						break;
+					case 2:
+						break;
+					case 3: 
+						break;
+					default:
+						results = "Critical error! Please contact current project lead of website." 
+				} 
+			}
+			document.getElementById("results_table").style.display = "inline";
+
+			
 		}
 		function load_RCS(){
-			results += " loading";
-			var file = new XMLHttpRequest();
-			file.open("GET", "sample.csv", false);
-			file.send();
-			
-			results += file.responseText;
+			var path = "/m";
+			var fname = path + model.toString();
+			if(model == 2 || model == 3){
+				if (male = true){fname += "/male" ;}
+				else {fname += "/female";}
+			}
+		
 			
 
+			fname = fname + "/" + airway.toString() + ".csv";
+				
+			var file = new XMLHttpRequest()
+			file.open("GET", fname, false);
+			file.send();
+			raw_RCS= file.responseText;
+			parseCSV();
+
+		}
+		function parseCSV(){
+			var tempArray = CSVToArray();
+			RCS = [];
+			if (model == 1){
+				var i;
+				var j;
+				var tempRow;
+				for (i = 1; i<1001; i++){
+					tempRow = [];
+					for (j = 5; j<9; j++){
+						tempRow.push(parseFloat(tempArray[i][j]));
+					}
+					RCS.push(tempRow);
+				}
+			
+			}else{
+		
+			}			
+		}
+		
+		//The following function was copied from StackOverflow: 
+		//https://stackoverflow.com/questions/1293147/example-javascript-code-to-parse-csv-data
+		function CSVToArray(){
+			var strDelimiter = ",";
+
+			// Create a regular expression to parse the CSV values.
+			var objPattern = new RegExp(
+				(
+					// Delimiters.
+					"(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+
+					// Quoted fields.
+					"(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+
+					// Standard fields.
+					"([^\\" + strDelimiter + "\\r\\n]*))"
+				),
+				"gi"
+				);
+
+			// Create an array to hold our data. Give the array
+			// a default empty first row.
+			var arrData = [[]];
+
+			// Create an array to hold our individual pattern
+			// matching groups.
+			var arrMatches = null;
+
+
+			// Keep looping over the regular expression matches
+			// until we can no longer find a match.
+			while (arrMatches = objPattern.exec( raw_RCS )){
+
+				// Get the delimiter that was found.
+				var strMatchedDelimiter = arrMatches[ 1 ];
+
+				// Check to see if the given delimiter has a length
+				// (is not the start of string) and if it matches
+				// field delimiter. If id does not, then we know
+				// that this delimiter is a row delimiter.
+				if (
+					strMatchedDelimiter.length &&
+					strMatchedDelimiter !== strDelimiter
+					){
+
+					// Since we have reached a new row of data,
+					// add an empty row to our data array.
+					arrData.push( [] );
+
+				}
+
+				var strMatchedValue;
+
+				// Now that we have our delimiter out of the way,
+				// let's check to see which kind of value we
+				// captured (quoted or unquoted).
+				if (arrMatches[ 2 ]){
+					// We found a quoted value. When we capture
+					// this value, unescape any double quotes.
+					strMatchedValue = arrMatches[ 2 ].replace(
+						new RegExp( "\"\"", "g" ),
+						"\""
+						);
+				} else {
+					// We found a non-quoted value.
+					strMatchedValue = arrMatches[ 3 ];
+				}
+
+				// Now that we have our value string, let's add
+				// it to the data array.
+				arrData[ arrData.length - 1 ].push( strMatchedValue );
+			}
+
+			// Return the parsed data.
+			return( arrData );
 		}
 		
 
-		
 	</script>
 
 </html>
