@@ -1,41 +1,194 @@
 <html>
 
+
+
 	<head>
 		<title> Airway Calculator </title>
+		<style type="text/css">
+			* {
+			  box-sizing: border-box;
+			}
+
+			body {
+			  font-family: Arial, Helvetica, sans-serif;
+			}
+			.header {
+			  background-color: #8b9dc3;
+			  padding: 10px;
+			  text-align: center;
+			  font-size: 20px;
+			}
+			.column1 {
+			  float: left;
+			  width: 30%;
+			  padding: 10px;
+			  height:240px;
+			}
+			.column2 {
+			  float: left;
+			  width: 70%;
+			  padding: 10px;
+			  height:240px;
+			}
+			.row:after {
+			  content: "";
+			  display: table;
+			  clear: both;
+			}
+			.footer {
+			  background-color: #8b9dc3;
+			  padding: 10px;
+			  text-align: center;
+			}
+
+			
+			@media (max-width: 600px) {
+			  .column {
+				width: 100%;
+			  }
+			}
+		</style>  
 	</head>
 	
 	<body>
-		<!--
-		<p>Text with <b>bold</b>, <i>italics</i>, and <u>underline</u>.
-		-->
-		<h2> Airway Dimension Calculator </h2>
-		<h3> Please fill completely one or both of the forms: </h3>
-		<hr>
-		
-		<form onsubmit="return false">
-			<table> 
-				<thead>
-					<tr>
-						<th>Form 1</th>
-						<th>Form 2</th>
-					</tr>
-				</thead>
-				<tr>
-					<td> <p> Volume: <input type="text" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </p> </td>
-					<td> <p> 
-						Age: <input type = "text" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> <br>
-						Height: <input type = "text" autocomplete="off"  pattern="[0-9]*[.,]?[0-9]+"> <br>
-						Male<input type="radio" name="gender"> &nbsp &nbsp    
-						Female<input type="radio" name="gender"> 
-					</p> </td>
-				</tr> 
-			</table>
-			<p> <input type="submit">
-		</form> 
-		<hr>
-		<img src="lungs.jpg" width = "250">
-		lungs picture
-	</body>
+		<div class="header">
+			<h2> Airway Dimension Calculator </h2>
+			<h5> This tool is used to calculate predicted airway diameters based on the reference equations outlined in Vameghestahbanati et al. (2021). <br>
+			Please completely fill either Part A <i>and/or</i> Part B:
+			</h5>
+		</div>
 	
+		<div class="row">
+			<div class="column1" style="background-color:#dfe3ee;">
+				<form id="myForm">
+					<table><tr></tr> <tr></tr></table>
+					<b>Part A</b>
+					<p> Total CT lung volume (litres): &nbsp <input type="text" id = "in_vol" size ="10" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </p>
+					<hr>
+					<p><b>Part B</b></p>
+					<table>
+						<tr>
+							<td> Age (years): &nbsp </td>
+							<td><input type = "text" id = "in_age" size ="10" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </td>
+						</tr>
+						<tr>
+							<td> Height: </td>
+							<td> <input type = "text" id ="in_height" size ="10" autocomplete="off"  pattern="[0-9]*[.,]?[0-9]+"> </td>
+							<td> &nbsp &nbsp Units: 
+								<select id="in_units">
+									<option>cm</option>
+									<option>inch</option>
+								</select>
+							</td>
+						</tr>
+						<tr></tr>	
+						<tr></tr>
+						<tr><td>
+							Male<input type="radio" id="in_male" name="gender"> &nbsp &nbsp   </td><td> 
+							Female<input type="radio" id="in_female"name="gender"> 
+						</td></tr>
+					</table>
+				</form>
+			</div>
+			<div class="column2" style="background-color:#f1f1f1;">
+				<b> Results </b>
+				<p id="results_display"> </p>
+
+			</div>
+		</div>
+	
+
+		<div class="footer">
+		  <p>
+			<button id = "submitted">Submit</button> &nbsp &nbsp &nbsp
+			<button id = "cleared">Clear</button>
+		  
+		  </p>
+		</div>
+			
+	</body>
+
+	<script type="text/javascript">
+		var results;
+		//var M1_RCS;
+		//var M2_RCS_male;
+		//var M2_RCS_female;
+		//var M3_RCS_male;
+		//var M3_RCS_female;
+		
+		var vol;
+		var age;
+		var height; 
+		var male;
+		var model;
+		
+		document.getElementById("submitted").onclick = process;
+		document.getElementById("cleared").onclick = clear;
+		
+		//Proccess the user inputs, proceed to calculations
+		function process(){
+			vol = age = height = male = results = null;
+			vol = document.getElementById("in_vol").value;
+			age = document.getElementById("in_age").value;
+			if(document.getElementById("in_units").value == "cm"){
+				height = document.getElementById("in_height").value;
+			}else{
+				height = document.getElementById("in_height").value * 2.54;
+			}
+			
+			if (document.getElementById("in_male").checked || document.getElementById("in_female").checked){
+				male = document.getElementById("in_male").checked;
+			}
+			
+			//If any inputs are blank, set them null
+			if (vol == ""){vol = null;}
+			if (age == ""){age = null;}
+			if (height == ""){height= null;}
+			
+			
+			if ((vol != null && isNaN(vol)) || (vol != null && isNaN(vol)) || (vol != null && isNaN(vol))) {
+				results = "<p style='color:red'><b>Mistake with inputs!</b></p>" ;
+			}else{
+			
+				if (vol != null && age != null &&  height != null && male != null){
+					model = 3;
+				}else if(vol != null){
+					model = 1;
+				}else if(age != null &&  height != null && male != null){
+					model = 2;
+				}else{
+					model = 0;
+				}
+				
+				results = "vol: " + vol + " age: " + age + " height: " + height + " male: " + male;
+				results += "<br> model: " + model;
+			}
+			document.getElementById("results_display").innerHTML = results;
+		}
+		
+		function clear()
+		{
+			document.getElementById("in_vol").value = null;
+			document.getElementById("in_age").value= null;
+			document.getElementById("in_height").value= null;
+			document.getElementById("in_male").checked = false;
+			document.getElementById("in_female").checked = false;
+			document.getElementById("results_display").innerHTML = "";
+		
+		}
+		
+		function calculate(){
+			load_RCS;
+		}
+		function load_RCS(){
+			$.ajax({
+			  url: 'csv_data.csv',
+			  dataType: 'text',
+			}).done(successFunction);
+		}
+		
+
+		
+	</script>
 
 </html>
