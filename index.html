@@ -53,9 +53,10 @@
 	<body>
 		<div class="header">
 			<h2> Airway Dimension Calculator </h2>
-			<h5> This tool is used to calculate predicted airway diameters based on the reference equations outlined in Vameghestahbanati et al. (2021). <br>
+			<p style="font-size: 17.5px"> This tool is used to calculate predicted airway diameters based on the reference equations outlined in Vameghestahbanati et al. (2021). <br>
 			Please completely fill either Part A <i>and/or</i> Part B:
-			</h5>
+			</p>
+			
 		</div>
 	
 		<div class="row">
@@ -122,7 +123,7 @@
 		var male;
 		var model;
 		
-		document.getElementById("submitted").onclick = process;
+		document.getElementById("submitted").onclick = calculate;
 		document.getElementById("cleared").onclick = clear;
 		
 		//Proccess the user inputs, proceed to calculations
@@ -178,13 +179,20 @@
 		}
 		
 		function calculate(){
-			load_RCS;
+			results = "c start + ";
+			load_RCS();
+			results += "c finished";
+			document.getElementById("results_display").innerHTML = results;
 		}
 		function load_RCS(){
-			$.ajax({
-			  url: 'csv_data.csv',
-			  dataType: 'text',
-			}).done(successFunction);
+			results += " loading";
+			var file = new XMLHttpRequest();
+			file.open("GET", "sample.csv", false);
+			file.send();
+			
+			results += file.responseText;
+			
+
 		}
 		
 
