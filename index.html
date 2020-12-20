@@ -53,7 +53,7 @@
 	<body>
 		<div class="header">
 			<h2> Airway Dimension Calculator </h2>
-			<p style="font-size: 17.5px"> This tool is used to calculate predicted airway diameters based on the reference equations described in Vameghestahbanati et al. (2021). <br>
+			<p style="font-size: 17.5px"> This tool is used to calculate adult predicted airway diameters based on the reference equations described in Vameghestahbanati et al. (2021). <br>
 			Please completely fill either Part A <i>and/or</i> Part B:
 			</p>
 			
@@ -403,7 +403,7 @@
 			
 		}
 		function load_RCS(){
-			var path = "https://raw.githubusercontent.com/airwaycalculator/airwaycalculator.github.io/main/m";
+			var path = "/m";
 			var fname = path + model.toString();
 			if(model == 2 || model == 3){
 				if (male == true){fname += "/male/" ;}
