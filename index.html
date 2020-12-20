@@ -109,7 +109,7 @@
 						<td id = "result3"> </td>
 					</tr>
 				</table>
-				<p id ="results_display"></p>
+				<br><p id ="results_display"></p>
 
 			</div>
 		</div>
@@ -181,6 +181,7 @@
 				if (model != 0){
 					calculate();
 					document.getElementById("results_display").innerHTML = "<b>Calculated with model " + model.toString() +".</b>";
+					
 				}
 			}
 
@@ -204,13 +205,19 @@
 			var tempResults;
 			var tempVal;
 			
+			tempVal = 0;
+			if(model == 2 || model == 3){
+				age = age/10;
+				height = height/10;
+			}
+						
+			
 			
 			for (airway = 1; airway < 4; airway++){
 				load_RCS();
 				tempResults =[];
 				switch(model){
 					case 1:
-						tempVal = 0;
 						var ers_tot_P95= 7.34046;
 						var ers_tot_P75= 5.78896;
 						var ers_tot_P25= 3.89463 ;
@@ -238,10 +245,7 @@
 						
 						
 					case 2:
-						tempVal = 0;
-						age = age/10;
-						height = height/10;
-						
+
 						if (male){
 							var AGEYR_P95=   8.4;
 							var AGEYR_P75= 7.3;
@@ -269,37 +273,52 @@
 						
 						var AGEYR_TAU = (AGEYR_P95 - AGEYR_P5)**2.0;
 
-						var AGEYR1 = (Math.max(age - AGEYR_P5,0))**3.0/AGEYR_TAU -((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P5)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
+						var AGEYR1 = (Math.max(age - AGEYR_P5,0))**3.0/AGEYR_TAU -
+						((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P5)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
 						((Math.max(age - AGEYR_P95,0))**3.0)*((AGEYR_P75 - AGEYR_P5)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU;
-
-						var AGEYR2 = (Math.max(age - AGEYR_P25,0))**3.0/AGEYR_TAU -((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
+						
+						var AGEYR2 = (Math.max(age - AGEYR_P25,0))**3.0/AGEYR_TAU -
+						((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU +
 						((Math.max(age - AGEYR_P95,0))**3.0)*((AGEYR_P75 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU;
+						
+						//alert((Math.max(age - AGEYR_P25,0))**3.0/AGEYR_TAU + ", " + 
+						//((Math.max(age - AGEYR_P75,0))**3.0)*((AGEYR_P95 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU + ", "+
+						//((Math.max(age - AGEYR_P95,0))**3.0)*((AGEYR_P75 - AGEYR_P25)/(AGEYR_P95 - AGEYR_P75))/AGEYR_TAU);
 
 						var HTCM_TAU = (HTCM_P95 - HTCM_P5)**2.0;
-						var HTCM1 = (Math.max(height - HTCM_P5,0))**3.0/HTCM_TAU -((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P5)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
+						
+						var HTCM1 = (Math.max(height - HTCM_P5,0))**3.0/HTCM_TAU -
+						((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P5)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
 						((Math.max(height - HTCM_P95,0))**3.0)*((HTCM_P75 - HTCM_P5)/(HTCM_P95 - HTCM_P75))/HTCM_TAU;
 
-						var HTCM2 = (Math.max(height - HTCM_P25,0))**3.0/HTCM_TAU -((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P25)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
+						var HTCM2 = (Math.max(height - HTCM_P25,0))**3.0/HTCM_TAU -
+						((Math.max(height - HTCM_P75,0))**3.0)*((HTCM_P95 - HTCM_P25)/(HTCM_P95 - HTCM_P75))/HTCM_TAU +
 						((Math.max(height - HTCM_P95,0))**3.0)*((HTCM_P75 - HTCM_P25)/(HTCM_P95 - HTCM_P75))/HTCM_TAU;
+						
+						//alert(airway);
+						//alert(AGEYR_TAU + ", " + AGEYR1+ ", " + AGEYR2 + ", " + HTCM_TAU + ", " + HTCM1 + ", " +HTCM2);
 						
 						
 						for (i = 0; i<1000; i++){
+						  //tempResults.push(RCS[i][0] + vol * RCS[i][1] + ers_tot1 * RCS[i][2] + ers_tot2 * RCS[i][3]);
 							tempResults.push(RCS[i][0] + age * RCS[i][1] + AGEYR1 * RCS[i][2] + AGEYR2 * RCS[i][3] + height * RCS[i][4] + HTCM1 * RCS[i][5] + HTCM2 * RCS[i][6] );
 						}
 						for (i = 0; i<1000; i++){
 							tempVal += tempResults[i];
 						}
 						tempVal = tempVal/1000;
-						document.getElementById("result"+airway).innerHTML = tempVal.toFixed(3);
+						//alert(age, height);
+						//alert("first calc: " + RCS[0][0] + "+ "+ age * RCS[0][1] + "+ "+  AGEYR1 * RCS[0][2] + "+ "+  AGEYR2 * RCS[0][3] + "+ "+  height * RCS[0][4] + "+ "+  HTCM1 * RCS[0][5] + "+ "+  HTCM2 * RCS[0][6]);
+						//alert("first pred value: " + tempResults[0]);
+						//alert("first RCS row: " + RCS[0]);
+						document.getElementById("result"+airway.toString()).innerHTML = tempVal.toFixed(3);
+
 
 
 					
 					
 						break;
 					case 3: 
-						tempVal = 0;
-						age = age/10;
-						height = height/10;
 						
 						if (male){
 							var AGEYR_P95=   8.4;
@@ -371,7 +390,7 @@
 										
 						}
 						tempVal = tempVal/1000;
-						document.getElementById("result"+airway).innerHTML = tempVal.toFixed(3);
+						document.getElementById("result"+airway.toString()).innerHTML = tempVal.toFixed(3);
 
 					
 						break;
@@ -384,7 +403,7 @@
 			
 		}
 		function load_RCS(){
-			var path = "/m";
+			var path = "https://raw.githubusercontent.com/airwaycalculator/airwaycalculator.github.io/main/m";
 			var fname = path + model.toString();
 			if(model == 2 || model == 3){
 				if (male == true){fname += "/male/" ;}
