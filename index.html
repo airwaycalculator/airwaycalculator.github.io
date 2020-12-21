@@ -94,19 +94,59 @@
 			</div>
 			<div class="column2" style="background-color:#f1f1f1;">
 				<table><tr></td><tr></td><tr></td></table>
-				<b> Predicted airway diameters (mm) </b> <hr>
+				<b> Predicted airway diameters (mm) (95% CI) </b> <hr>
 				<table id = "results_table" style="display:none">
 					<tr>
-						<td> Trachea &nbsp  </td>
+						<td>Trachea &nbsp  </td>
 						<td id = "result1"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp LUL &nbsp </td>
+						<td id = "result8"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp sRB1 &nbsp </td>
+						<td id = "result15"> </td>
 					</tr>
 					<tr>
 						<td> RMB </td>
 						<td id = "result2"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp LLL &nbsp </td>
+						<td id = "result9"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp sRB4 &nbsp </td>
+						<td id = "result16"> </td>
 					</tr>
 					<tr>
 						<td> LMB</td>
 						<td id = "result3"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp RB1 &nbsp </td>
+						<td id = "result10"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp sRB10 &nbsp </td>
+						<td id = "result17"> </td>
+					</tr>
+					<tr>
+						<td> BI</td>
+						<td id = "result4"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp RB4 &nbsp </td>
+						<td id = "result11"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp sLB1 &nbsp </td>
+						<td id = "result18"> </td>
+					</tr>
+					<tr>
+						<td> RUL</td>
+						<td id = "result5"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp RB10 &nbsp </td>
+						<td id = "result12"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp sLB10 &nbsp </td>
+						<td id = "result19"> </td>
+					</tr>
+					<tr>
+						<td> RML</td>
+						<td id = "result6"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp LB1 &nbsp </td>
+						<td id = "result13"> </td>
+					</tr>
+					<tr>
+						<td> RLL</td>
+						<td id = "result7"> </td>
+						<td> &nbsp &nbsp &nbsp &nbsp LB10 &nbsp </td>
+						<td id = "result14"> </td>
 					</tr>
 				</table>
 				<br><p id ="results_display"></p>
@@ -123,9 +163,10 @@
 		</div>
 			
 	</body>
-
+	<script src="jstat.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var results;
+		var meanAirways;
 		
 		var RCS = [];
 		var raw_RCS;
@@ -180,7 +221,17 @@
 				//results += "<br> model: " + model;
 				if (model != 0){
 					calculate();
-					document.getElementById("results_display").innerHTML = "<b>Calculated with model " + model.toString() +".</b>";
+					
+					var p;
+					var meanA = 0;
+					for(p = 0; p<meanAirways.length; p++){ 
+						meanA += meanAirways[p];
+					}
+					meanA /= meanAirways.length;
+
+					document.getElementById("results_display").innerHTML = "<b>MEAN AIRWAY = &nbsp" + meanA.toFixed(2);
+					document.getElementById("results_display").innerHTML += "<b> ("+ jStat.tci(meanA, 0.025, meanAirways)[0].toFixed(2) + ", " + jStat.tci(meanA, 0.025, meanAirways)[1].toFixed(2) + ").</b>";
+					document.getElementById("results_display").innerHTML += " &nbsp &nbsp &nbspCalculated with model " + model.toString() +".";
 					
 				}
 			}
@@ -205,6 +256,8 @@
 			var tempResults;
 			var tempVal;
 			
+			meanAirways = [];
+			
 			tempVal = 0;
 			if(model == 2 || model == 3){
 				age = age/10;
@@ -213,7 +266,7 @@
 						
 			
 			
-			for (airway = 1; airway < 4; airway++){
+			for (airway = 1; airway < 9; airway++){
 				load_RCS();
 				tempResults =[];
 				switch(model){
@@ -235,12 +288,7 @@
 						for (i = 0; i<1000; i++){
 							tempResults.push(RCS[i][0] + vol * RCS[i][1] + ers_tot1 * RCS[i][2] + ers_tot2 * RCS[i][3]);
 						}
-						for (i = 0; i<1000; i++){
-							tempVal += tempResults[i];
-						}
-						tempVal = tempVal/1000;
-						document.getElementById("result"+airway).innerHTML = tempVal.toFixed(3);
-	
+
 						break;
 						
 						
@@ -303,19 +351,11 @@
 						  //tempResults.push(RCS[i][0] + vol * RCS[i][1] + ers_tot1 * RCS[i][2] + ers_tot2 * RCS[i][3]);
 							tempResults.push(RCS[i][0] + age * RCS[i][1] + AGEYR1 * RCS[i][2] + AGEYR2 * RCS[i][3] + height * RCS[i][4] + HTCM1 * RCS[i][5] + HTCM2 * RCS[i][6] );
 						}
-						for (i = 0; i<1000; i++){
-							tempVal += tempResults[i];
-						}
-						tempVal = tempVal/1000;
+
 						//alert(age, height);
 						//alert("first calc: " + RCS[0][0] + "+ "+ age * RCS[0][1] + "+ "+  AGEYR1 * RCS[0][2] + "+ "+  AGEYR2 * RCS[0][3] + "+ "+  height * RCS[0][4] + "+ "+  HTCM1 * RCS[0][5] + "+ "+  HTCM2 * RCS[0][6]);
 						//alert("first pred value: " + tempResults[0]);
 						//alert("first RCS row: " + RCS[0]);
-						document.getElementById("result"+airway.toString()).innerHTML = tempVal.toFixed(3);
-
-
-
-					
 					
 						break;
 					case 3: 
@@ -376,27 +416,27 @@
 						((Math.max(vol- ers_tot_P75,0))**3.0)*((ers_tot_P95 - ers_tot_P25)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU +
 						((Math.max(vol- ers_tot_P95,0))**3.0)*((ers_tot_P75 - ers_tot_P25)/(ers_tot_P95 - ers_tot_P75))/ers_tot_TAU;
 
-						
-						
+							
 						
 						for (i = 0; i<1000; i++){
 							tempResults.push(RCS[i][0] + age * RCS[i][1] + AGEYR1 * RCS[i][2] + AGEYR2 * RCS[i][3] + height * RCS[i][4] + HTCM1 * RCS[i][5] + HTCM2 * RCS[i][6]  
 							+ vol * RCS[i][7] + ers_tot1 * RCS[i][8] + ers_tot2 * RCS[i][9]);
 
 						}
-						for (i = 0; i<1000; i++){
-
-							tempVal += tempResults[i];
-										
-						}
-						tempVal = tempVal/1000;
-						document.getElementById("result"+airway.toString()).innerHTML = tempVal.toFixed(3);
-
 					
 						break;
 					default:
 						results = "Critical error! Please contact current project lead of website." 
 				} 
+				
+				for (i = 0; i<1000; i++){
+					tempVal += tempResults[i];	
+					meanAirways.push(tempResults[i]);
+				}
+
+				tempVal = tempVal/1000;
+				//alert(tempResults);
+				document.getElementById("result"+airway).innerHTML = tempVal.toFixed(2) + " ("+ jStat.tci(tempVal, 0.025, tempResults)[0].toFixed(2) + ", " + jStat.tci(tempVal, 0.025, tempResults)[1].toFixed(2) + ")";
 			}
 			document.getElementById("results_table").style.display = "inline";
 
