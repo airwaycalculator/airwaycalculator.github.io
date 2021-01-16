@@ -65,7 +65,7 @@
 
 					<table><tr></td><tr></td><tr></td></table>
 					<b>Part A</b>
-					<p> Total CT lung volume (litres): &nbsp <input type="text" id = "in_vol" size ="7" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </p>
+					<p> Total inspiratory CT lung volume (litres): &nbsp <input type="text" id = "in_vol" size ="7" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </p>
 					<hr>
 					<p><b>Part B</b></p>
 					<table>
@@ -74,7 +74,7 @@
 							<td><input type = "text" id = "in_age" size ="7" autocomplete="off" pattern="[0-9]*[.,]?[0-9]+"> </td>
 						</tr>
 						<tr>
-							<td> Height: </td>
+							<td> Body height: </td>
 							<td> <input type = "text" id ="in_height" size ="7" autocomplete="off"  pattern="[0-9]*[.,]?[0-9]+"> </td>
 							<td> &nbsp &nbsp Units: 
 								<select id="in_units">
@@ -94,7 +94,7 @@
 			</div>
 			<div class="column2" style="background-color:#f1f1f1;">
 				<table><tr></td><tr></td><tr></td></table>
-				<b> Predicted airway diameters (mm) (95% CI) </b> <hr>
+				<b> Predicted cross-sectional airway lumen diameters (mm) (95% CI) </b> <hr>
 				<table id = "results_table" style="display:none">
 					<tr>
 						<td>Trachea &nbsp  </td>
@@ -105,9 +105,9 @@
 						<td id = "result15"> </td>
 					</tr>
 					<tr>
-						<td> RMB </td>
+						<td> RB4+5 </td>
 						<td id = "result2"> </td>
-						<td> &nbsp &nbsp &nbsp &nbsp LLL &nbsp </td>
+						<td> &nbsp &nbsp &nbsp &nbsp LLB6 &nbsp </td>
 						<td id = "result9"> </td>
 						<td> &nbsp &nbsp &nbsp &nbsp sRB4 &nbsp </td>
 						<td id = "result16"> </td>
@@ -230,8 +230,14 @@
 					meanA /= meanAirways.length;
 
 					document.getElementById("results_display").innerHTML = "<b>MEAN AIRWAY = &nbsp" + meanA.toFixed(2);
-					document.getElementById("results_display").innerHTML += "<b> ("+ jStat.tci(meanA, 0.025, meanAirways)[0].toFixed(2) + ", " + jStat.tci(meanA, 0.025, meanAirways)[1].toFixed(2) + ").</b>";
-					document.getElementById("results_display").innerHTML += " &nbsp &nbsp &nbspCalculated with model " + model.toString() +".";
+					document.getElementById("results_display").innerHTML += "<b> ("+ jStat.tci(meanA, 0.025, meanAirways)[0].toFixed(2) + ", " + jStat.tci(meanA, 0.025, meanAirways)[1].toFixed(2) + ")</b>";
+					document.getElementById("results_display").innerHTML += "&nbsp&nbsp&nbsp&nbspModel " + model.toString() +": calculated using ";
+					if (model == 1){
+						document.getElementById("results_display").innerHTML += "only lung volume.";}
+					else if (model == 2){
+						document.getElementById("results_display").innerHTML += "age, height, and gender.";}
+					else {
+						document.getElementById("results_display").innerHTML += "lung volume, age, height, and gender.";}
 					
 				}
 			}
@@ -266,7 +272,7 @@
 						
 			
 			
-			for (airway = 1; airway < 9; airway++){
+			for (airway = 1; airway < 20; airway++){
 				load_RCS();
 				tempResults =[];
 				switch(model){
